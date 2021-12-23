@@ -222,6 +222,7 @@ It represents the target headers:
 | Property           | Description                                                                           | Type                                                     | Required | Default |
 | ------------------ | ---------------------------------------------------------------------------------------- | ----------------------------------------------------- | -------- | ------- |
 | `public`           | Relative glob pattern that points to the public headers.                                 | [`FileList`](#file-list)                              | No       |         |
+| `umbrellaHeader`   | Path to an umbrella header, which will be used to get list of public headers             | [`Path`](#path)                                       | No       |         |
 | `private`          | Relative glob pattern that points to the private headers.                                | [`FileList`](#file-list)                              | No       |         |
 | `project`          | Relative glob pattern that points to the project headers.                                | [`FileList`](#file-list)                              | No       |         |
 | `exclusionRule`    | Rule, which determines how to resolve found duplicates in public/private/project scopes  | [`AutomaticExclusionRule`](#automatic-exclusion-rule) | No       | `.none` |
