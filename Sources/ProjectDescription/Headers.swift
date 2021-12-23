@@ -28,6 +28,10 @@ public struct Headers: Codable, Equatable {
         case publicExcludesPrivateAndProject
     }
 
+    /// Umbrella header path, which wil be parsed
+    /// to get list of public headers
+    public let umbrellaHeader: Path?
+
     /// Relative path to public headers.
     public let `public`: FileList?
 
@@ -42,11 +46,13 @@ public struct Headers: Codable, Equatable {
     public let exclusionRule: AutomaticExclusionRule
 
     private init(public: FileList? = nil,
+                 umbrellaHeader: Path? = nil,
                  private: FileList? = nil,
                  project: FileList? = nil,
                  exclusionRule: AutomaticExclusionRule)
     {
         self.public = `public`
+        self.umbrellaHeader = umbrellaHeader
         self.private = `private`
         self.project = project
         self.exclusionRule = exclusionRule
@@ -80,6 +86,50 @@ public struct Headers: Codable, Equatable {
             private: `private`,
             project: project,
             exclusionRule: exclusionRule
+        )
+    }
+
+    public static func headers(from list: FileList,
+                               umbrella: Path,
+                               private: FileList? = nil,
+                               allOthersAsProject: Bool) -> Headers
+    {
+        return .init(
+            public: list,
+            umbrellaHeader: umbrella,
+            private: `private`,
+            project: allOthersAsProject ? list : nil,
+            exclusionRule: .projectExcludesPrivateAndPublic
+        )
+    }
+
+    /// all left found headers from the list
+    /// (after public/private scopes loading)
+    /// will be added with `project` visibility
+    public static func allHeaders(from list: FileList,
+                                  umbrella: Path,
+                                  private: FileList? = nil) -> Headers
+    {
+        return headers(
+            from: list,
+            umbrella: umbrella,
+            private: `private`,
+            allOthersAsProject: true
+        )
+    }
+
+    /// all left found headers from the list
+    /// (after public/private scopes loading)
+    /// will be skipped
+    public static func onlyHeaders(from list: FileList,
+                                   umbrella: Path,
+                                   private: FileList? = nil) -> Headers
+    {
+        return headers(
+            from: list,
+            umbrella: umbrella,
+            private: `private`,
+            allOthersAsProject: false
         )
     }
 }
