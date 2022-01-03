@@ -650,6 +650,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "erkekin",
+      "name": "Erk Ekin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/701481?v=4",
+      "profile": "http://erkekin.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "morozkin",
+      "name": "Denis Morozov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16591888?v=4",
+      "profile": "https://github.com/morozkin",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

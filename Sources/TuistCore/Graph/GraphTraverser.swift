@@ -141,19 +141,6 @@ public class GraphTraverser: GraphTraversing {
         return Set(bundles.compactMap(dependencyReference))
     }
 
-    public func testTargetsDependingOn(path: AbsolutePath, name: String) -> Set<GraphTarget> {
-        guard let project = graph.projects[path] else { return Set() }
-
-        return Set(
-            graph.targets[path]?.values
-                .filter { $0.product.testsBundle }
-                .filter {
-                    graph.dependencies[.target(name: $0.name, path: path)]?.contains(.target(name: name, path: path)) == true
-                }
-                .map { GraphTarget(path: path, target: $0, project: project) } ?? []
-        )
-    }
-
     public func target(from dependency: GraphDependency) -> GraphTarget? {
         guard case let GraphDependency.target(name, path) = dependency else {
             return nil
@@ -188,7 +175,7 @@ public class GraphTraverser: GraphTraversing {
                     return (path, name)
                 }
                 .compactMap { graph.targets[$0.path]?[$0.name] }
-                .filter { $0.product.isStatic }
+                .filter(\.product.isStatic)
                 .map {
                     .product(
                         target: $0.name,
@@ -307,7 +294,7 @@ public class GraphTraverser: GraphTraversing {
 
         // Static libraries and frameworks / Static libraries' dynamic libraries
         if target.target.canLinkStaticProducts() {
-            let transitiveStaticTargets = self.transitiveStaticTargets(from: .target(name: name, path: path))
+            let transitiveStaticTargets = transitiveStaticTargets(from: .target(name: name, path: path))
 
             // Exclude any static products linked in a host application
             // however, for search paths it's fine to keep them included
@@ -453,7 +440,7 @@ public class GraphTraverser: GraphTraversing {
     }
 
     public func allProjectDependencies(path: AbsolutePath) throws -> Set<GraphDependencyReference> {
-        let targets = self.targets(at: path)
+        let targets = targets(at: path)
         if targets.isEmpty { return Set() }
         var references: Set<GraphDependencyReference> = Set()
 

@@ -10,11 +10,11 @@ func debugSettings() -> SettingsDictionary {
 }
 
 func releaseSettings() -> SettingsDictionary {
-    return baseSettings
+    baseSettings
 }
 
 func targets() -> [Target] {
-    return [
+    [
         Target.target(
             name: "tuistenv",
             product: .commandLineTool,
@@ -504,5 +504,6 @@ let project = Project(
             .release(name: "Release", settings: releaseSettings(), xcconfig: nil),
         ]
     ),
-    targets: targets()
+    targets: targets(),
+    additionalFiles: ["CHANGELOG.md"]
 )

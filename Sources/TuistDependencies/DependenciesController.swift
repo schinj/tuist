@@ -107,7 +107,7 @@ public final class DependenciesController: DependenciesControlling {
         dependencies: TuistGraph.Dependencies,
         swiftVersion: TSCUtility.Version?
     ) throws -> TuistCore.DependenciesGraph {
-        return try install(
+        try install(
             at: path,
             dependencies: dependencies,
             shouldUpdate: false,
@@ -120,7 +120,7 @@ public final class DependenciesController: DependenciesControlling {
         dependencies: TuistGraph.Dependencies,
         swiftVersion: TSCUtility.Version?
     ) throws -> TuistCore.DependenciesGraph {
-        return try install(
+        try install(
             at: path,
             dependencies: dependencies,
             shouldUpdate: true,
@@ -147,13 +147,6 @@ public final class DependenciesController: DependenciesControlling {
         shouldUpdate: Bool,
         swiftVersion: TSCUtility.Version?
     ) throws -> TuistCore.DependenciesGraph {
-        logger.warning(
-            """
-            The integration of external dependencies is in alpha. \
-            Be aware some APIs might change as we iterate the functionality with the feedback we get from users.
-            """
-        )
-
         let dependenciesDirectory = path
             .appending(component: Constants.tuistDirectoryName)
             .appending(component: Constants.DependenciesDirectory.name)
