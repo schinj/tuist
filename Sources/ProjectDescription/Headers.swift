@@ -89,7 +89,7 @@ public struct Headers: Codable, Equatable {
         )
     }
 
-    public static func headers(from list: FileList,
+    private static func headers(from list: FileList,
                                umbrella: Path,
                                private: FileList? = nil,
                                allOthersAsProject: Bool) -> Headers
@@ -103,9 +103,14 @@ public struct Headers: Codable, Equatable {
         )
     }
 
-    /// all left found headers from the list
-    /// (after public/private scopes loading)
-    /// will be added with `project` visibility
+    /// Loading headers from the file list,
+    /// as `public` will be marked all presented in the umbrella header
+    /// as `private` - all from the file list of private headers (exclude already found `public`)
+    /// as `project` - all others
+    /// - Parameters:
+    ///     - from: File list, which contains `public` and `project` headers
+    ///     - umbrella: File path to the umbrella header
+    ///     - private: File list, which contains `private` headers
     public static func allHeaders(from list: FileList,
                                   umbrella: Path,
                                   private: FileList? = nil) -> Headers
@@ -118,9 +123,14 @@ public struct Headers: Codable, Equatable {
         )
     }
 
-    /// all left found headers from the list
-    /// (after public/private scopes loading)
-    /// will be skipped
+    /// Loading headers from the file list,
+    /// as `public` will be marked all presented in the umbrella header
+    /// as `private` - all from the file list of private headers (exclude already found `public`)
+    /// `project` will be empty - all other headers will be skipped
+    /// - Parameters:
+    ///     - from: File list, which contains `public` and `project` headers
+    ///     - umbrella: File path to the umbrella header
+    ///     - private: File list, which contains `private` headers
     public static func onlyHeaders(from list: FileList,
                                    umbrella: Path,
                                    private: FileList? = nil) -> Headers
