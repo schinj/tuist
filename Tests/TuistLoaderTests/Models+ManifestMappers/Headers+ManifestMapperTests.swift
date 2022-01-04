@@ -399,11 +399,9 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         ])
         try createVersionFile(content: umbrellaContent, in: umbrellaPath)
 
-        let manifest = ProjectDescription.Headers.headers(
+        let manifest = ProjectDescription.Headers.allHeaders(
             from: "Sources/**",
-            umbrella: "Sources/Umbrella.h",
-            private: nil,
-            allOthersAsProject: true
+            umbrella: "Sources/Umbrella.h"
         )
 
         // When
@@ -459,7 +457,7 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         ])
         try createVersionFile(content: umbrellaContent, in: umbrellaPath)
 
-        let manifest = ProjectDescription.Headers.headers(
+        let manifest = ProjectDescription.Headers.allHeaders(
             from: .list([.glob(
                 "Sources/group/**",
                 excluding: [
@@ -467,8 +465,7 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
                 ]
             )]),
             umbrella: "Sources/Umbrella.h",
-            private: "Sources/**/*+Private.h",
-            allOthersAsProject: true
+            private: "Sources/**/*+Private.h"
         )
 
         // When
