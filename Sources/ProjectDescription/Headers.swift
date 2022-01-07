@@ -90,11 +90,11 @@ public struct Headers: Codable, Equatable {
     }
 
     private static func headers(from list: FileList,
-                               umbrella: Path,
-                               private: FileList? = nil,
-                               allOthersAsProject: Bool) -> Headers
+                                umbrella: Path,
+                                private: FileList? = nil,
+                                allOthersAsProject: Bool) -> Headers
     {
-        return .init(
+        .init(
             public: list,
             umbrellaHeader: umbrella,
             private: `private`,
@@ -115,7 +115,7 @@ public struct Headers: Codable, Equatable {
                                   umbrella: Path,
                                   private: FileList? = nil) -> Headers
     {
-        return headers(
+        headers(
             from: list,
             umbrella: umbrella,
             private: `private`,
@@ -135,7 +135,7 @@ public struct Headers: Codable, Equatable {
                                    umbrella: Path,
                                    private: FileList? = nil) -> Headers
     {
-        return headers(
+        headers(
             from: list,
             umbrella: umbrella,
             private: `private`,

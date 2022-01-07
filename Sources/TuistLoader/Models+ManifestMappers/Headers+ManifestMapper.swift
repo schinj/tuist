@@ -16,11 +16,10 @@ extension TuistGraph.Headers {
         let headersFromUmbrella: Set<String>?
         if let resolvedUmbrellaPath = resolvedUmbrellaPath {
             headersFromUmbrella = Set(try UmbrellaHeaderHeadersExtractor.headers(from: resolvedUmbrellaPath))
-        }
-        else {
+        } else {
             headersFromUmbrella = nil
         }
-        
+
         var autoExlcudedPaths = Set<AbsolutePath>()
         let publicHeaders: [AbsolutePath]
         let privateHeaders: [AbsolutePath]
@@ -28,7 +27,8 @@ extension TuistGraph.Headers {
 
         let allowedExtensions = TuistGraph.Headers.extensions
         func unfold(_ list: FileList?,
-                    headersFromUmbrella: Set<String>? = nil) throws -> [AbsolutePath] {
+                    headersFromUmbrella: Set<String>? = nil) throws -> [AbsolutePath]
+        {
             guard let list = list else { return [] }
             var result = try list.globs.flatMap {
                 try $0.unfold(generatorPaths: generatorPaths) { path in

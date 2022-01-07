@@ -7,21 +7,22 @@ import TuistSupport
 extension FileListGlob {
     func unfold(
         generatorPaths: GeneratorPaths,
-        filter: ((AbsolutePath) -> Bool)? = nil) throws -> [AbsolutePath] {
-            let resolvedPath = try generatorPaths.resolve(path: glob)
-            let resolvedExcluding = try resolvedExcluding(generatorPaths: generatorPaths)
-            let pattern = String(resolvedPath.pathString.dropFirst())
-            return FileHandler.shared.glob(AbsolutePath.root, glob: pattern).filter { path in
-                guard !resolvedExcluding.contains(path) else {
-                    return false
-                }
-                if let filter = filter {
-                    return filter(path)
-                }
-                return true
+        filter: ((AbsolutePath) -> Bool)? = nil
+    ) throws -> [AbsolutePath] {
+        let resolvedPath = try generatorPaths.resolve(path: glob)
+        let resolvedExcluding = try resolvedExcluding(generatorPaths: generatorPaths)
+        let pattern = String(resolvedPath.pathString.dropFirst())
+        return FileHandler.shared.glob(AbsolutePath.root, glob: pattern).filter { path in
+            guard !resolvedExcluding.contains(path) else {
+                return false
             }
+            if let filter = filter {
+                return filter(path)
+            }
+            return true
         }
-    
+    }
+
     private func resolvedExcluding(generatorPaths: GeneratorPaths) throws -> Set<AbsolutePath> {
         guard !excluding.isEmpty else { return [] }
         var result: Set<AbsolutePath> = []

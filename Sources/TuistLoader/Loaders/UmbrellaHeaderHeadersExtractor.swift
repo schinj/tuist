@@ -7,7 +7,7 @@ public enum UmbrellaHeaderHeadersExtractor {
         static let ignoreImports = ["UIKit", "Foundation"]
     }
 
-    public static func headers(from path: AbsolutePath) throws -> Array<String> {
+    public static func headers(from path: AbsolutePath) throws -> [String] {
         let umbrellaContent = try String(contentsOf: path.url, encoding: .utf8)
         let lines = umbrellaContent.components(separatedBy: .newlines)
 

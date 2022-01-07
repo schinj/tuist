@@ -368,7 +368,7 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
 
     func test_load_from_umbrella() throws {
         // Given
-        let temporaryPath = try self.temporaryPath()
+        let temporaryPath = try temporaryPath()
         let generatorPaths = GeneratorPaths(manifestDirectory: temporaryPath)
 
         let umbrellaContent = """
@@ -427,7 +427,7 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
 
     func test_load_from_umbrella_withExcluding() throws {
         // Given
-        let temporaryPath = try self.temporaryPath()
+        let temporaryPath = try temporaryPath()
         let generatorPaths = GeneratorPaths(manifestDirectory: temporaryPath)
 
         let umbrellaContent = """
@@ -490,7 +490,7 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
 
     func test_load_from_umbrella_withExcluding_withOutProject() throws {
         // Given
-        let temporaryPath = try self.temporaryPath()
+        let temporaryPath = try temporaryPath()
         let generatorPaths = GeneratorPaths(manifestDirectory: temporaryPath)
 
         let umbrellaContent = """
