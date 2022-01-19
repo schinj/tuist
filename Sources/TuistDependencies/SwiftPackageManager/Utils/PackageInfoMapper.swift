@@ -291,6 +291,39 @@ public final class PackageInfoMapper: PackageInfoMapping {
         packageToProject: [String: AbsolutePath],
         swiftToolsVersion: TSCUtility.Version?
     ) throws -> ProjectDescription.Project? {
+        // Hardcoded mapping for some well known libraries, until the logic can handle those properly
+        let productTypes = productTypes.merging(
+            // Force dynamic frameworks
+            Dictionary(
+                uniqueKeysWithValues: [
+                    "Checksum", // https://github.com/rnine/Checksum
+                    "RxSwift", // https://github.com/ReactiveX/RxSwift
+                ].map {
+                    ($0, .framework)
+                }
+            ),
+            uniquingKeysWith: { userDefined, _ in userDefined }
+        )
+        let targetSettings = targetSettings.merging(
+            // Force enable testing search paths
+            Dictionary(
+                uniqueKeysWithValues: [
+                    "Nimble", // https://github.com/Quick/Nimble
+                    "Quick", // https://github.com/Quick/Quick
+                    "RxTest", // https://github.com/ReactiveX/RxSwift
+                    "RxTest-Dynamic", // https://github.com/ReactiveX/RxSwift
+                    "SnapshotTesting", // https://github.com/pointfreeco/swift-snapshot-testing
+                    "TempuraTesting", // https://github.com/BendingSpoons/tempura-swift
+                    "TSCTestSupport", // https://github.com/apple/swift-tools-support-core
+                ].map {
+                    ($0, ["ENABLE_TESTING_SEARCH_PATHS": "YES"])
+                }
+            ),
+            uniquingKeysWith: { userDefined, defaultDictionary in
+                userDefined.merging(defaultDictionary, uniquingKeysWith: { userDefined, _ in userDefined })
+            }
+        )
+
         let targets = try packageInfo.targets.compactMap { target -> ProjectDescription.Target? in
             guard let products = targetToProducts[target.name] else { return nil }
             return try Target.from(
@@ -722,7 +755,7 @@ extension ProjectDescription.Settings {
         if !defines.isEmpty {
             let sortedDefines = defines.sorted { $0.key < $1.key }
             settingsDictionary["GCC_PREPROCESSOR_DEFINITIONS"] = .array(["$(inherited)"] + sortedDefines.map { key, value in
-                "\(key)=\(value)"
+                "\(key)=\(value.spm_shellEscaped())"
             })
         }
 

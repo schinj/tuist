@@ -69,6 +69,7 @@ public final class MockSystem: Systeming {
         if stub.exitstatus != 0 {
             throw TuistSupport.SystemError.terminated(command: arguments.first!, code: 1, standardError: Data())
         }
+        calls.append(arguments.joined(separator: " "))
         return stub.stdout ?? ""
     }
 
@@ -105,6 +106,14 @@ public final class MockSystem: Systeming {
             throw TuistSupport.SystemError.terminated(command: arguments.first!, code: 1, standardError: Data())
         }
         calls.append(arguments.joined(separator: " "))
+    }
+
+    public func runAndCollectOutput(_ arguments: [String]) async throws -> SystemCollectedOutput {
+        try await observable(arguments, verbose: false)
+            .mapToString()
+            .collectOutput()
+            .asSingle()
+            .value
     }
 
     public func observable(_ arguments: [String]) -> Observable<SystemEvent<Data>> {
