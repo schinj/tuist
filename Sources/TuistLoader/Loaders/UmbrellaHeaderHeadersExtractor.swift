@@ -1,5 +1,6 @@
 import Foundation
 import TSCBasic
+import TuistSupport
 
 public enum UmbrellaHeaderHeadersExtractor {
     fileprivate enum Constants {
@@ -7,19 +8,34 @@ public enum UmbrellaHeaderHeadersExtractor {
         static let ignoreImports = ["UIKit", "Foundation"]
     }
 
-    public static func headers(from path: AbsolutePath) throws -> [String] {
-        let umbrellaContent = try String(contentsOf: path.url, encoding: .utf8)
+    public static func headers(from path: AbsolutePath, for productName: String) throws -> [String] {
+        let umbrellaContent = try FileHandler.shared.readTextFile(path)
         let lines = umbrellaContent.components(separatedBy: .newlines)
 
         return lines.compactMap { line in
             let stripped = line.trimmingCharacters(in: .whitespaces)
-            guard stripped.hasPrefix("#import"),
-                  let found = Constants.regex?.fistMatch(in: stripped),
-                  !Constants.ignoreImports.contains(where: found.hasPrefix)
-            else {
+            let expectedPrefixes = [
+                "#import \"",
+                "#import <",
+            ]
+            guard let matchingPrefix = expectedPrefixes.first(where: { line.hasPrefix($0) }) else {
                 return nil
             }
-            return found.components(separatedBy: "/").last
+            let headerReference = stripped.dropFirst(matchingPrefix.count).dropLast()
+            let headerComponents = headerReference.components(separatedBy: "/")
+
+            // <ProductName/Header.h>
+            // "ProductName/Header.h"
+            let isValidProductPrefixedHeader = headerComponents.count == 2 && headerComponents[0] == productName
+
+            // "Header.h"
+            let isValidSingleHeader = headerComponents.count == 1
+
+            guard isValidProductPrefixedHeader || isValidSingleHeader else {
+                return nil
+            }
+
+            return headerComponents.last
         }
     }
 }

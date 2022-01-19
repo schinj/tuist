@@ -11,10 +11,10 @@ let project = Project(
             bundleId: "io.tuist.Framework1",
             infoPlist: "Config/Framework1-Info.plist",
             sources: "Sources/**",
-            headers: Headers.headers(
-                public: ["Sources/Public/A/**", "Sources/Public/B/**"],
-                private: ["Sources/Private/**"],
-                project: ["Sources/Project/**"]
+            headers: .allHeaders(
+                from: "Sources/**",
+                umbrella: "Sources/Framework1.h",
+                private: "Sources/MyPrivateClass.h"
             ),
             dependencies: []
         ),
@@ -26,10 +26,10 @@ let project = Project(
             bundleId: "io.tuist.Framework1",
             infoPlist: "Config/Framework1-Info.plist",
             sources: "Sources/**",
-            headers: Headers.headers(
-                public: "Sources/Public/**",
-                private: "Sources/Private/**",
-                project: "Sources/Project/**"
+            headers: .allHeaders(
+                from: "Sources/**",
+                umbrella: "Sources/Framework1.h",
+                private: "Sources/MyPrivateClass.h"
             ),
             dependencies: []
         ),

@@ -13,11 +13,8 @@ extension TuistGraph.Headers {
     ///   - generatorPaths: Generator paths.
     static func from(manifest: ProjectDescription.Headers, generatorPaths: GeneratorPaths) throws -> TuistGraph.Headers {
         let resolvedUmbrellaPath = try manifest.umbrellaHeader.map { try generatorPaths.resolve(path: $0) }
-        let headersFromUmbrella: Set<String>?
-        if let resolvedUmbrellaPath = resolvedUmbrellaPath {
-            headersFromUmbrella = Set(try UmbrellaHeaderHeadersExtractor.headers(from: resolvedUmbrellaPath))
-        } else {
-            headersFromUmbrella = nil
+        let headersFromUmbrella = try resolvedUmbrellaPath.map {
+          Set(try UmbrellaHeaderHeadersExtractor.headers(from: $0))
         }
 
         var autoExlcudedPaths = Set<AbsolutePath>()
