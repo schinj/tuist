@@ -11,10 +11,14 @@ extension TuistGraph.Headers {
     /// - Parameters:
     ///   - manifest: Manifest representation of Headers.
     ///   - generatorPaths: Generator paths.
-    static func from(manifest: ProjectDescription.Headers, generatorPaths: GeneratorPaths) throws -> TuistGraph.Headers {
+    static func from(
+        manifest: ProjectDescription.Headers,
+        generatorPaths: GeneratorPaths,
+        productName: String?
+    ) throws -> TuistGraph.Headers {
         let resolvedUmbrellaPath = try manifest.umbrellaHeader.map { try generatorPaths.resolve(path: $0) }
         let headersFromUmbrella = try resolvedUmbrellaPath.map {
-          Set(try UmbrellaHeaderHeadersExtractor.headers(from: $0))
+            Set(try UmbrellaHeaderHeadersExtractor.headers(from: $0, for: productName))
         }
 
         var autoExlcudedPaths = Set<AbsolutePath>()

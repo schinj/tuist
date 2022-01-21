@@ -38,7 +38,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -85,7 +89,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -124,7 +132,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -165,7 +177,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -205,7 +221,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -245,7 +265,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -298,7 +322,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -347,7 +375,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "ModuleA"
+        )
 
         // Then
         XCTAssertEqual(model.public, [
@@ -386,6 +418,7 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         #import <TuistTestModule/A2.h>
         #import "A3.h" // to test modules with legacy format
         #import <TuistTestModule/A2+Protected.h> // to test modules, where some protected files became public
+        #import <UIKit/A4+Private.h> // to test incorrect module
         """
         let umbrellaPath = temporaryPath.appending(RelativePath("Sources/Umbrella.h"))
 
@@ -405,7 +438,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "TuistTestModule"
+        )
 
         // Then
         XCTAssertEqual(model.public.sorted(), [
@@ -469,7 +506,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "TuistTestModule"
+        )
 
         // Then
         XCTAssertEqual(model.public.sorted(), [
@@ -532,7 +573,11 @@ final class HeadersManifestMapperTests: TuistUnitTestCase {
         )
 
         // When
-        let model = try TuistGraph.Headers.from(manifest: manifest, generatorPaths: generatorPaths)
+        let model = try TuistGraph.Headers.from(
+            manifest: manifest,
+            generatorPaths: generatorPaths,
+            productName: "TuistTestModule"
+        )
 
         // Then
         XCTAssertEqual(model.public.sorted(), [

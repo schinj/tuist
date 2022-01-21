@@ -8,7 +8,10 @@ public enum UmbrellaHeaderHeadersExtractor {
         static let ignoreImports = ["UIKit", "Foundation"]
     }
 
-    public static func headers(from path: AbsolutePath, for productName: String) throws -> [String] {
+    public static func headers(
+        from path: AbsolutePath,
+        for productName: String?
+    ) throws -> [String] {
         let umbrellaContent = try FileHandler.shared.readTextFile(path)
         let lines = umbrellaContent.components(separatedBy: .newlines)
 
@@ -26,7 +29,9 @@ public enum UmbrellaHeaderHeadersExtractor {
 
             // <ProductName/Header.h>
             // "ProductName/Header.h"
-            let isValidProductPrefixedHeader = headerComponents.count == 2 && headerComponents[0] == productName
+            let isValidProductPrefixedHeader = headerComponents.count == 2 &&
+                productName != nil &&
+                headerComponents[0] == productName
 
             // "Header.h"
             let isValidSingleHeader = headerComponents.count == 1
