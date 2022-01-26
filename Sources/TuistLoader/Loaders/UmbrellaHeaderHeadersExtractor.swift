@@ -14,17 +14,21 @@ public enum UmbrellaHeaderHeadersExtractor {
     ) throws -> [String] {
         let umbrellaContent = try FileHandler.shared.readTextFile(path)
         let lines = umbrellaContent.components(separatedBy: .newlines)
+        let expectedPrefixes = [
+            "#import \"",
+            "#import <",
+        ]
 
         return lines.compactMap { line in
             let stripped = line.trimmingCharacters(in: .whitespaces)
-            let expectedPrefixes = [
-                "#import \"",
-                "#import <",
-            ]
             guard let matchingPrefix = expectedPrefixes.first(where: { line.hasPrefix($0) }) else {
                 return nil
             }
-            let headerReference = stripped.dropFirst(matchingPrefix.count).dropLast()
+            // also we need drop comments
+            guard let stripedWithoutComments = stripped.components(separatedBy: "//").first else {
+                return nil
+            }
+            let headerReference = stripedWithoutComments.dropFirst(matchingPrefix.count).dropLast()
             let headerComponents = headerReference.components(separatedBy: "/")
 
             // <ProductName/Header.h>
