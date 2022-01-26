@@ -38,7 +38,7 @@ final class XcodeBuildControllerTests: TuistUnitTestCase {
         let events = subject.build(target, scheme: scheme, clean: true, arguments: [])
 
         let result = try await events.toArray()
-        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output\n"))])
+        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output"))])
     }
 
     func test_test_when_device() async throws {
@@ -71,11 +71,12 @@ final class XcodeBuildControllerTests: TuistUnitTestCase {
             destination: .device("device-id"),
             derivedDataPath: nil,
             resultBundlePath: nil,
-            arguments: []
+            arguments: [],
+            retryCount: 0
         )
 
         let result = try await events.toArray()
-        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output\n"))])
+        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output"))])
     }
 
     func test_test_when_mac() async throws {
@@ -107,11 +108,12 @@ final class XcodeBuildControllerTests: TuistUnitTestCase {
             destination: .mac,
             derivedDataPath: nil,
             resultBundlePath: nil,
-            arguments: []
+            arguments: [],
+            retryCount: 0
         )
 
         let result = try await events.toArray()
-        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output\n"))])
+        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output"))])
     }
 
     func test_test_with_derived_data() async throws {
@@ -143,11 +145,12 @@ final class XcodeBuildControllerTests: TuistUnitTestCase {
             destination: .mac,
             derivedDataPath: derivedDataPath,
             resultBundlePath: nil,
-            arguments: []
+            arguments: [],
+            retryCount: 0
         )
 
         let result = try await events.toArray()
-        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output\n"))])
+        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output"))])
     }
 
     func test_test_with_result_bundle_path() async throws {
@@ -179,11 +182,12 @@ final class XcodeBuildControllerTests: TuistUnitTestCase {
             destination: .mac,
             derivedDataPath: nil,
             resultBundlePath: resultBundlePath,
-            arguments: []
+            arguments: [],
+            retryCount: 0
         )
 
         let result = try await events.toArray()
-        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output\n"))])
+        XCTAssertEqual(result, [.standardOutput(XcodeBuildOutput(raw: "output"))])
     }
 }
 
