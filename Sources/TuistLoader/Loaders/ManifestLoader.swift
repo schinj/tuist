@@ -10,6 +10,7 @@ public enum ManifestLoaderError: FatalError, Equatable {
     case unexpectedOutput(AbsolutePath)
     case manifestNotFound(Manifest?, AbsolutePath)
     case manifestCachingFailed(Manifest?, AbsolutePath)
+    case manifestLoadingFailed(path: AbsolutePath, context: String)
 
     public static func manifestNotFound(_ path: AbsolutePath) -> ManifestLoaderError {
         .manifestNotFound(nil, path)
@@ -25,6 +26,11 @@ public enum ManifestLoaderError: FatalError, Equatable {
             return "\(manifest?.fileName(path) ?? "Manifest") not found at path \(path.pathString)"
         case let .manifestCachingFailed(manifest, path):
             return "Could not cache \(manifest?.fileName(path) ?? "Manifest") at path \(path.pathString)"
+        case let .manifestLoadingFailed(path, context):
+            return """
+            Unable to load manifest at \(path.pathString.bold())
+            \(context)
+            """
         }
     }
 
@@ -38,21 +44,8 @@ public enum ManifestLoaderError: FatalError, Equatable {
             return .abort
         case .manifestCachingFailed:
             return .abort
-        }
-    }
-
-    // MARK: - Equatable
-
-    public static func == (lhs: ManifestLoaderError, rhs: ManifestLoaderError) -> Bool {
-        switch (lhs, rhs) {
-        case let (.projectDescriptionNotFound(lhsPath), .projectDescriptionNotFound(rhsPath)):
-            return lhsPath == rhsPath
-        case let (.unexpectedOutput(lhsPath), .unexpectedOutput(rhsPath)):
-            return lhsPath == rhsPath
-        case let (.manifestNotFound(lhsManifest, lhsPath), .manifestNotFound(rhsManifest, rhsPath)):
-            return lhsManifest == rhsManifest && lhsPath == rhsPath
-        default:
-            return false
+        case .manifestLoadingFailed:
+            return .abort
         }
     }
 }
@@ -81,10 +74,6 @@ public protocol ManifestLoading {
     /// - Parameters:
     ///     -  path: Path to the directory that contains Dependencies.swift
     func loadDependencies(at path: AbsolutePath) throws -> ProjectDescription.Dependencies
-
-    /// Returns arguments for loading `Tasks.swift`
-    /// You can append this list to insert your own custom flag
-    func taskLoadArguments(at path: AbsolutePath) throws -> [String]
 
     /// Loads the Plugin.swift in the given directory.
     /// - Parameter path: Path to the directory that contains Plugin.swift
@@ -166,10 +155,6 @@ public class ManifestLoader: ManifestLoading {
         return try loadManifest(.dependencies, at: dependencyPath)
     }
 
-    public func taskLoadArguments(at path: AbsolutePath) throws -> [String] {
-        try buildArguments(.task, at: path)
-    }
-
     public func loadPlugin(at path: AbsolutePath) throws -> ProjectDescription.Plugin {
         try loadManifest(.plugin, at: path)
     }
@@ -188,12 +173,63 @@ public class ManifestLoader: ManifestLoading {
             manifest,
             at: path
         )
+
         let data = try loadDataForManifest(manifest, at: manifestPath)
-        if Environment.shared.isVerbose {
-            let string = String(data: data, encoding: .utf8)
-            logger.debug("Trying to load the manifest represented by the following JSON representation:\n\(string ?? "")")
+
+        do {
+            return try decoder.decode(T.self, from: data)
+        } catch {
+            guard let error = error as? DecodingError else {
+                throw ManifestLoaderError.manifestLoadingFailed(
+                    path: manifestPath, context: error.localizedDescription
+                )
+            }
+
+            let json = (String(data: data, encoding: .utf8) ?? "nil")
+
+            switch error {
+            case let .typeMismatch(type, context):
+                throw ManifestLoaderError.manifestLoadingFailed(
+                    path: manifestPath,
+                    context: """
+                    The content of the manifest did not match the expected type of: \(String(describing: type).bold())
+                    \(context.debugDescription)
+                    """
+                )
+            case let .valueNotFound(value, _):
+                throw ManifestLoaderError.manifestLoadingFailed(
+                    path: manifestPath,
+                    context: """
+                    Expected a non-optional value for property of type \(String(describing: value).bold()) but found a nil value.
+                    \(json.bold())
+                    """
+                )
+            case let .keyNotFound(codingKey, _):
+                throw ManifestLoaderError.manifestLoadingFailed(
+                    path: manifestPath,
+                    context: """
+                    Did not find property with name \(codingKey.stringValue.bold()) in the JSON represented by:
+                    \(json.bold())
+                    """
+                )
+            case let .dataCorrupted(context):
+                throw ManifestLoaderError.manifestLoadingFailed(
+                    path: manifestPath,
+                    context: """
+                    The encoded data for the manifest is corrupted.
+                    \(context.debugDescription)
+                    """
+                )
+            @unknown default:
+                throw ManifestLoaderError.manifestLoadingFailed(
+                    path: manifestPath,
+                    context: """
+                    Unable to decode the manifest for an unknown reason.
+                    \(error.localizedDescription)
+                    """
+                )
+            }
         }
-        return try decoder.decode(T.self, from: data)
     }
 
     private func manifestPath(
@@ -251,8 +287,6 @@ public class ManifestLoader: ManifestLoading {
         let searchPaths = ProjectDescriptionSearchPaths.paths(for: projectDescriptionPath)
         let frameworkName: String
         switch manifest {
-        case .task:
-            frameworkName = "ProjectAutomation"
         case .config,
              .plugin,
              .dependencies,
@@ -277,9 +311,7 @@ public class ManifestLoader: ManifestLoading {
 
         let projectDescriptionHelperArguments: [String] = try {
             switch manifest {
-            case .config,
-                 .plugin,
-                 .task:
+            case .config, .plugin:
                 return []
             case .dependencies,
                  .project,

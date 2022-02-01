@@ -36,7 +36,7 @@ final class CacheWarmService {
             config: config,
             path: path,
             cacheProfile: profile,
-            includedTargets: targets.isEmpty ? try projectTargets(at: path, config: config) : targets,
+            includedTargets: targets,
             dependenciesOnly: dependenciesOnly
         )
     }
@@ -75,18 +75,5 @@ final class CacheWarmService {
             bundleArtifactBuilder: bundleBuilder,
             contentHasher: contentHasher
         )
-    }
-
-    private func projectTargets(at path: AbsolutePath, config: Config) throws -> Set<String> {
-        let plugins = try pluginService.loadPlugins(using: config)
-        try manifestLoader.register(plugins: plugins)
-        let projects: [AbsolutePath]
-        if let workspace = try? manifestLoader.loadWorkspace(at: path) {
-            projects = workspace.projects.map { AbsolutePath(path, .init($0.pathString)) }
-        } else {
-            projects = [path]
-        }
-
-        return try Set(projects.flatMap { try manifestLoader.loadProject(at: $0).targets.map(\.name) })
     }
 }

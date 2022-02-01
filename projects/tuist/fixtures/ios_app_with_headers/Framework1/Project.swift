@@ -11,7 +11,7 @@ let project = Project(
             bundleId: "io.tuist.Framework1",
             infoPlist: "Config/Framework1-Info.plist",
             sources: "Sources/**",
-            headers: Headers.headers(
+            headers: .headers(
                 public: ["Sources/Public/A/**", "Sources/Public/B/**"],
                 private: ["Sources/Private/**"],
                 project: ["Sources/Project/**"]
@@ -26,7 +26,7 @@ let project = Project(
             bundleId: "io.tuist.Framework1",
             infoPlist: "Config/Framework1-Info.plist",
             sources: "Sources/**",
-            headers: Headers.headers(
+            headers: .headers(
                 public: "Sources/Public/**",
                 private: "Sources/Private/**",
                 project: "Sources/Project/**"

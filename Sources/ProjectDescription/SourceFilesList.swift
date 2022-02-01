@@ -1,7 +1,7 @@
 // MARK: - FileList
 
 /// A model to refer to source files that supports passing compiler flags.
-public struct SourceFileGlob: ExpressibleByStringInterpolation, Codable, Equatable {
+public struct SourceFileGlob: Codable, Equatable {
     /// Relative glob pattern.
     public let glob: Path
 
@@ -21,36 +21,33 @@ public struct SourceFileGlob: ExpressibleByStringInterpolation, Codable, Equatab
     ///   - excluding: Relative glob patterns for excluded files.
     ///   - compilerFlags: Compiler flags.
     ///   - codegen: Source file code generation attribute
-    public init(_ glob: Path,
-                excluding: [Path] = [],
-                compilerFlags: String? = nil,
-                codeGen: FileCodeGen? = nil)
-    {
-        self.glob = glob
-        self.excluding = excluding
-        self.compilerFlags = compilerFlags
-        self.codeGen = codeGen
+    public static func glob(
+        _ glob: Path,
+        excluding: [Path] = [],
+        compilerFlags: String? = nil,
+        codeGen: FileCodeGen? = nil
+    ) -> Self {
+        .init(glob: glob, excluding: excluding, compilerFlags: compilerFlags, codeGen: codeGen)
     }
 
-    public init(_ glob: Path,
-                excluding: Path?,
-                compilerFlags: String? = nil,
-                codeGen: FileCodeGen? = nil)
-    {
+    public static func glob(
+        _ glob: Path,
+        excluding: Path?,
+        compilerFlags: String? = nil,
+        codeGen: FileCodeGen? = nil
+    ) -> Self {
         let paths: [Path] = excluding.flatMap { [$0] } ?? []
-        self.init(glob, excluding: paths, compilerFlags: compilerFlags, codeGen: codeGen)
+        return .init(glob: glob, excluding: paths, compilerFlags: compilerFlags, codeGen: codeGen)
     }
+}
 
+extension SourceFileGlob: ExpressibleByStringInterpolation {
     public init(stringLiteral value: String) {
-        self.init(Path(value))
+        self.init(glob: Path(value), excluding: [], compilerFlags: nil, codeGen: nil)
     }
 }
 
 public struct SourceFilesList: Codable, Equatable {
-    public enum CodingKeys: String, CodingKey {
-        case globs
-    }
-
     /// List glob patterns.
     public let globs: [SourceFileGlob]
 
@@ -71,17 +68,7 @@ public struct SourceFilesList: Codable, Equatable {
     /// Initializes a sources list with a list of paths.
     /// - Parameter paths: Source paths.
     public static func paths(_ paths: [Path]) -> SourceFilesList {
-        SourceFilesList(globs: paths.map { SourceFileGlob($0) })
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        globs = try container.decode([SourceFileGlob].self)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(globs)
+        SourceFilesList(globs: paths.map { .glob($0) })
     }
 }
 

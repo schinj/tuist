@@ -33,12 +33,6 @@ module Fourier
                 swift_build_directory: swift_build_directory,
                 xcode_paths: xcode_paths
               )
-              build_project_library(
-                name: "ProjectAutomation",
-                output_directory: build_directory,
-                swift_build_directory: swift_build_directory,
-                xcode_paths: xcode_paths
-              )
 
               Utilities::Output.section("Building Tuist...")
               build_tuist(
@@ -60,6 +54,8 @@ module Fourier
                 File.expand_path("Templates", Constants::ROOT_DIRECTORY),
                 File.expand_path("Templates", build_directory)
               )
+              Utilities::System.system("swift", "stdlib-tool", "--copy", "--scan-executable",
+                File.expand_path("tuist", build_directory), "--platform", "macosx", "--destination", build_directory)
 
               Dir.chdir(build_directory) do
                 output_zip_path = File.expand_path("tuist.zip", output_directory)
@@ -69,10 +65,9 @@ module Fourier
                   "zip", "-q", "-r", "--symlinks",
                   output_zip_path,
                   "tuist",
+                  "libswift_Concurrency.dylib",
                   "ProjectDescription.framework",
                   "ProjectDescription.framework.dSYM",
-                  "ProjectAutomation.framework",
-                  "ProjectAutomation.framework.dSYM",
                   "Templates",
                   "vendor",
                   "cocoapods-interactor"
