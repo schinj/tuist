@@ -24,8 +24,8 @@ public enum UmbrellaHeaderHeadersExtractor {
             guard let matchingPrefix = expectedPrefixes.first(where: { line.hasPrefix($0) }) else {
                 return nil
             }
-            // also we need drop comments
-            guard let stripedWithoutComments = stripped.components(separatedBy: "//").first else {
+            // also we need drop comments and spaces before comments
+            guard let stripedWithoutComments = stripped.components(separatedBy: "//").first?.trimmingCharacters(in: .whitespaces) else {
                 return nil
             }
             let headerReference = stripedWithoutComments.dropFirst(matchingPrefix.count).dropLast()
