@@ -19,7 +19,7 @@ extension TuistGraph.Headers {
         let resolvedUmbrellaPath = try manifest.umbrellaHeader.map { try generatorPaths.resolve(path: $0) }
         let headersFromUmbrella = try resolvedUmbrellaPath.map {
             Set(try UmbrellaHeaderHeadersExtractor.headers(from: $0, for: productName))
-        } ?? []
+        }
 
         var autoExlcudedPaths = Set<AbsolutePath>()
         let publicHeaders: [AbsolutePath]
@@ -39,7 +39,10 @@ extension TuistGraph.Headers {
                     else {
                         return false
                     }
-                    return isPublic ? headersFromUmbrella.contains(path.basename) : true
+                    if isPublic, let headersFromUmbrella = headersFromUmbrella {
+                        return headersFromUmbrella.contains(path.basename)
+                    }
+                    return true
                 }
             }
             // be sure, that umbrella was not added before
