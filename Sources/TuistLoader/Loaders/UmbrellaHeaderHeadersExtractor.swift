@@ -25,7 +25,10 @@ public enum UmbrellaHeaderHeadersExtractor {
                 return nil
             }
             // also we need drop comments and spaces before comments
-            guard let stripedWithoutComments = stripped.components(separatedBy: "//").first?.trimmingCharacters(in: .whitespaces) else {
+            guard let stripedWithoutComments = stripped.components(separatedBy: "//")
+                .first?
+                .trimmingCharacters(in: .whitespaces)
+            else {
                 return nil
             }
             let headerReference = stripedWithoutComments.dropFirst(matchingPrefix.count).dropLast()

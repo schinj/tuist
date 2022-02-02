@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import ProjectDescription
 import TSCBasic
@@ -34,11 +35,9 @@ extension TuistGraph.Headers {
             var result = try list.globs.flatMap {
                 try $0.unfold(generatorPaths: generatorPaths) { path in
                     guard let fileExtension = path.extension,
-                          allowedExtensions.contains(".\(fileExtension)")
+                          allowedExtensions.contains(".\(fileExtension)"),
+                          !autoExlcudedPaths.contains(path)
                     else {
-                        return false
-                    }
-                    guard !autoExlcudedPaths.contains(path) else {
                         return false
                     }
                     if let headersFromUmbrella = headersFromUmbrella {
@@ -48,9 +47,8 @@ extension TuistGraph.Headers {
                     }
                 }
             }
-            // be sure, that umbrella already here (if we use it)
-            if headersFromUmbrella != nil,
-               let resolvedUmbrellaPath = resolvedUmbrellaPath,
+            // be sure, that umbrella was not added before
+            if let resolvedUmbrellaPath = resolvedUmbrellaPath,
                !result.contains(resolvedUmbrellaPath)
             {
                 result.append(resolvedUmbrellaPath)
@@ -73,7 +71,6 @@ extension TuistGraph.Headers {
             autoExlcudedPaths.formUnion(privateHeaders)
             publicHeaders = try unfold(manifest.public, headersFromUmbrella: headersFromUmbrella)
         }
-
         return Headers(public: publicHeaders, private: privateHeaders, project: projectHeaders)
     }
 }
