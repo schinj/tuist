@@ -19,7 +19,7 @@ extension TuistGraph.Headers {
         let resolvedUmbrellaPath = try manifest.umbrellaHeader.map { try generatorPaths.resolve(path: $0) }
         let headersFromUmbrella = try resolvedUmbrellaPath.map {
             Set(try UmbrellaHeaderHeadersExtractor.headers(from: $0, for: productName))
-        }
+        } ?? []
 
         var autoExlcudedPaths = Set<AbsolutePath>()
         let publicHeaders: [AbsolutePath]
@@ -28,7 +28,7 @@ extension TuistGraph.Headers {
 
         let allowedExtensions = TuistGraph.Headers.extensions
         func unfold(_ list: FileList?,
-                    headersFromUmbrella: Set<String>? = nil) throws -> [AbsolutePath]
+                    isPublic: Bool = false) throws -> [AbsolutePath]
         {
             guard let list = list else { return [] }
             var result = try list.globs.flatMap {
@@ -39,15 +39,12 @@ extension TuistGraph.Headers {
                     else {
                         return false
                     }
-                    if let headersFromUmbrella = headersFromUmbrella {
-                        return headersFromUmbrella.contains(path.basename)
-                    } else {
-                        return true
-                    }
+                    return isPublic ? headersFromUmbrella.contains(path.basename) : true
                 }
             }
             // be sure, that umbrella was not added before
             if let resolvedUmbrellaPath = resolvedUmbrellaPath,
+               isPublic, // to use this logic only when public is used
                !result.contains(resolvedUmbrellaPath)
             {
                 result.append(resolvedUmbrellaPath)
@@ -57,7 +54,7 @@ extension TuistGraph.Headers {
 
         switch manifest.exclusionRule {
         case .projectExcludesPrivateAndPublic:
-            publicHeaders = try unfold(manifest.public, headersFromUmbrella: headersFromUmbrella)
+            publicHeaders = try unfold(manifest.public, isPublic: true)
             autoExlcudedPaths.formUnion(publicHeaders)
             privateHeaders = try unfold(manifest.private)
             autoExlcudedPaths.formUnion(privateHeaders)
@@ -68,7 +65,7 @@ extension TuistGraph.Headers {
             autoExlcudedPaths.formUnion(projectHeaders)
             privateHeaders = try unfold(manifest.private)
             autoExlcudedPaths.formUnion(privateHeaders)
-            publicHeaders = try unfold(manifest.public, headersFromUmbrella: headersFromUmbrella)
+            publicHeaders = try unfold(manifest.public, isPublic: true)
         }
         return Headers(public: publicHeaders, private: privateHeaders, project: projectHeaders)
     }
