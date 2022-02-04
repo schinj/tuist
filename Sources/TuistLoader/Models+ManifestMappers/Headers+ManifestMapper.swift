@@ -22,7 +22,7 @@ extension TuistGraph.Headers {
         }
 
         var autoExlcudedPaths = Set<AbsolutePath>()
-        let publicHeaders: [AbsolutePath]
+        var publicHeaders: [AbsolutePath]
         let privateHeaders: [AbsolutePath]
         let projectHeaders: [AbsolutePath]
 
@@ -31,7 +31,7 @@ extension TuistGraph.Headers {
                     isPublic: Bool = false) throws -> [AbsolutePath]
         {
             guard let list = list else { return [] }
-            var result = try list.globs.flatMap {
+            return try list.globs.flatMap {
                 try $0.unfold(generatorPaths: generatorPaths) { path in
                     guard let fileExtension = path.extension,
                           allowedExtensions.contains(".\(fileExtension)"),
@@ -45,19 +45,17 @@ extension TuistGraph.Headers {
                     return true
                 }
             }
-            // be sure, that umbrella was not added before
-            if let resolvedUmbrellaPath = resolvedUmbrellaPath,
-               isPublic, // to use this logic only when public is used
-               !result.contains(resolvedUmbrellaPath)
-            {
-                result.append(resolvedUmbrellaPath)
-            }
-            return result
         }
 
         switch manifest.exclusionRule {
         case .projectExcludesPrivateAndPublic:
             publicHeaders = try unfold(manifest.public, isPublic: true)
+            // be sure, that umbrella was not added before
+            if let resolvedUmbrellaPath = resolvedUmbrellaPath,
+               !publicHeaders.contains(resolvedUmbrellaPath)
+            {
+                publicHeaders.append(resolvedUmbrellaPath)
+            }
             autoExlcudedPaths.formUnion(publicHeaders)
             privateHeaders = try unfold(manifest.private)
             autoExlcudedPaths.formUnion(privateHeaders)
@@ -69,6 +67,12 @@ extension TuistGraph.Headers {
             privateHeaders = try unfold(manifest.private)
             autoExlcudedPaths.formUnion(privateHeaders)
             publicHeaders = try unfold(manifest.public, isPublic: true)
+            // be sure, that umbrella was not added before
+            if let resolvedUmbrellaPath = resolvedUmbrellaPath,
+               !publicHeaders.contains(resolvedUmbrellaPath)
+            {
+                publicHeaders.append(resolvedUmbrellaPath)
+            }
         }
         return Headers(public: publicHeaders, private: privateHeaders, project: projectHeaders)
     }

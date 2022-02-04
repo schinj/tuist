@@ -3,11 +3,6 @@ import TSCBasic
 import TuistSupport
 
 public enum UmbrellaHeaderHeadersExtractor {
-    fileprivate enum Constants {
-        static let regex = try? NSRegularExpression(pattern: "(?<=^#import (\\/|\"|<))(.+\\.h)", options: [])
-        static let ignoreImports = ["UIKit", "Foundation"]
-    }
-
     public static func headers(
         from path: AbsolutePath,
         for productName: String?

@@ -27,9 +27,8 @@ extension FileListGlob {
         guard !excluding.isEmpty else { return [] }
         var result: Set<AbsolutePath> = []
         try excluding.forEach { path in
-            let resolved = try generatorPaths.resolve(path: path).pathString
-            let absolute = AbsolutePath(resolved)
-            let globs = AbsolutePath(absolute.dirname).glob(absolute.basename)
+            let resolved = try generatorPaths.resolve(path: path)
+            let globs = AbsolutePath(resolved.dirname).glob(resolved.basename)
             result.formUnion(globs)
         }
         return result
