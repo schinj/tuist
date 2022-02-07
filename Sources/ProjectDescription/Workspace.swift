@@ -3,30 +3,6 @@ import Foundation
 // MARK: - Workspace
 
 public struct Workspace: Codable, Equatable {
-    /// Contains options related to the workspace generation.
-    public struct GenerationOptions: Codable, Equatable {
-        /// Represents the behavior Xcode will apply to the workspace regarding
-        /// schema generation using the `IDEWorkspaceSharedSettings_AutocreateContextsIfNeeded` key.
-        /// - seealso: `WorkspaceSettingsDescriptor`
-        public enum AutomaticSchemeMode: String, Codable, Equatable {
-            /// Will not add the key to the settings file.
-            case `default`
-
-            /// Will add the key with the value set to `false`.
-            case disabled
-
-            /// Will add the key with the value set to `true`.
-            case enabled
-        }
-
-        /// Tuist generates a WorkspaceSettings.xcsettings file, setting the related key to the associated value.
-        public let automaticXcodeSchemes: AutomaticSchemeMode
-
-        public static func options(automaticXcodeSchemes: AutomaticSchemeMode) -> Self {
-            GenerationOptions(automaticXcodeSchemes: automaticXcodeSchemes)
-        }
-    }
-
     /// Name of the workspace
     public let name: String
 
@@ -43,7 +19,7 @@ public struct Workspace: Codable, Equatable {
     public let additionalFiles: [FileElement]
 
     /// Generation options.
-    public let generationOptions: GenerationOptions?
+    public let generationOptions: GenerationOptions
 
     /// Workspace
     ///
@@ -52,14 +28,17 @@ public struct Workspace: Codable, Equatable {
     /// - Parameters:
     ///   - name: Name of the workspace.
     ///   - projects: List of project relative paths (or glob patterns) to generate and include.
-    ///   - additionalFiles: List of files to include in the workspace (e.g. Documentation)
+    ///   - schemes: List of workspace schemes.
+    ///   - fileHeaderTemplate: File header template.
+    ///   - additionalFiles: List of files to include in the workspace (e.g. Documentation).
+    ///   - generationOptions: Workspace generation options.
     public init(
         name: String,
         projects: [Path],
         schemes: [Scheme] = [],
         fileHeaderTemplate: FileHeaderTemplate? = nil,
         additionalFiles: [FileElement] = [],
-        generationOptions: GenerationOptions? = nil
+        generationOptions: GenerationOptions = .options()
     ) {
         self.name = name
         self.projects = projects
