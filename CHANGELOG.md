@@ -4,10 +4,6 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
 ## Next
 
-### Added
-
-- Add support for `umbrellaHeader` parameter to `Headers` to get list of public headers automatically. Also added new static functions in `Headers` for most popular cases with umbrella header [#3884](https://github.com/tuist/tuist/pull/3884) by [@pavel-trafimuk](https://github.com/pavel-trafimuk)
-
 ### Changed
 
 - **Breaking** Tuist plugins 2.0 [#3492](https://github.com/tuist/tuist/pull/3492) by [@fortmarek](https://github.com/fortmarek)
@@ -56,6 +52,10 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
 - Fix dependencies not fetching using Swift Package Manager 5.6 [#4078](https://github.com/tuist/tuist/pull/4078) by [mikchmie](https://github.com/mikchmie)
 - Fix clean `tuist test` for project with resources [#4091](https://github.com/tuist/tuist/pull/4091) by [@adellibovi](https://github.com/adellibovi)
+
+### Added
+
+- Add support for `umbrellaHeader` parameter to `Headers` to get list of public headers automatically. Also added new static functions in `Headers` for most popular cases with umbrella header [#3884](https://github.com/tuist/tuist/pull/3884) by [@pavel-trafimuk](https://github.com/pavel-trafimuk)
 
 ## 2.7.2
 
